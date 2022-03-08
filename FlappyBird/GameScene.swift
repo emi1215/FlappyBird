@@ -244,9 +244,11 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         
             let createBerryAnimation = SKAction.run({
                 
-                let berry = SKNode()
-                berry.position = CGPoint(x: random, y: random)
-                berry.zPosition = -50
+                let random_y = CGFloat.random(in: -random_y_range...random_y_range)
+                let berry_y = random_y
+                
+                let berry = SKSpriteNode(texture: berryTexture)
+                berry.position = CGPoint(x: 0, y: berry_y)
                 
                 berry.run(berryAnimation)
                 
@@ -257,7 +259,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         
             let repeatForeverAnimation = SKAction.repeatForever(SKAction.sequence([createBerryAnimation, waitAnimation]))
         
-            wallNode.run(repeatForeverAnimation)
+            berryNode.run(repeatForeverAnimation)
         }
 
     
