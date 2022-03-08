@@ -14,6 +14,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
     var scrollNode:SKNode!
     var wallNode:SKNode!
     var bird:SKSpriteNode!
+    var berryNode:SKNode!
     
     let birdCategory: UInt32 = 1 << 0
     let groundCategory: UInt32 = 1 << 1
@@ -35,7 +36,10 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         
         scrollNode = SKNode()
         addChild(scrollNode)
-        
+        wallNode = SKNode()
+        scrollNode.addChild(wallNode)
+        berryNode = SKNode()
+        scrollNode.addChild(berryNode)
        
         
         setupGround()
@@ -43,6 +47,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         setupWall()
         setupBird()
         setupScoreLabel()
+        setupBerry()
     }
     
     func setupScoreLabel() {
@@ -223,6 +228,46 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
             scrollNode.addChild(sprite)
         }
     }
+    
+    func setupBerry() {
+        
+            let berryTexture = SKTexture(imageNamed: "berry")
+            berryTexture.filteringMode = .linear
+        
+            let movingDistance = self.frame.size.width + berryTexture.size().width
+        
+            let moveBerry = SKAction.moveBy(x: -movingDistance, y: 0, duration:4)
+        
+            let removeBerry = SKAction.removeFromParent()
+        
+            let berryAnimation = SKAction.sequence([moveBerry, removeBerry])
+        
+            let birdSize = SKTexture(imageNamed: "bird_a").size()
+        
+            let createBerryAnimation = SKAction.run({
+                
+                let berry = SKNode()
+                berry.position = CGPoint(x: self.frame.size.width + berryTexture.size().width / 2, y: 0)
+                berry.zPosition = -50
+                
+                let random_y = CGFloat.random(in: self.frame.size.height)
+                let berry_y = random_y
+                
+                let berry = SKSpriteNode(texture: berryTexture)
+                berry.position = CGPoint(x: 0, y: berry_y)
+                
+                berry.run(berryAnimation)
+                
+                self.berryNode.addChild(berry)
+            })
+        
+            let waitAnimation = SKAction.wait(forDuration: 2)
+        
+            let repeatForeverAnimation = SKAction.repeatForever(SKAction.sequence([createBerryAnimation, waitAnimation]))
+        
+            wallNode.run(repeatForeverAnimation)
+        }
+
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if scrollNode.speed > 0 {
