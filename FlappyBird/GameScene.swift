@@ -242,19 +242,11 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         
             let berryAnimation = SKAction.sequence([moveBerry, removeBerry])
         
-            let birdSize = SKTexture(imageNamed: "bird_a").size()
-        
             let createBerryAnimation = SKAction.run({
                 
                 let berry = SKNode()
-                berry.position = CGPoint(x: self.frame.size.width + berryTexture.size().width / 2, y: 0)
+                berry.position = CGPoint(x: random, y: random)
                 berry.zPosition = -50
-                
-                let random_y = CGFloat.random(in: self.frame.size.height)
-                let berry_y = random_y
-                
-                let berry = SKSpriteNode(texture: berryTexture)
-                berry.position = CGPoint(x: 0, y: berry_y)
                 
                 berry.run(berryAnimation)
                 
