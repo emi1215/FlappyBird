@@ -13,6 +13,7 @@
 		A533200527C472A8009B3B05 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A533200327C472A8009B3B05 /* Main.storyboard */; };
 		A533200727C472A9009B3B05 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A533200627C472A9009B3B05 /* Assets.xcassets */; };
 		A533200A27C472A9009B3B05 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A533200827C472A9009B3B05 /* LaunchScreen.storyboard */; };
+		A534E26D27D9C9E30000EDCD /* 効果音.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A534E26C27D9C9E30000EDCD /* 効果音.mp3 */; };
 		A542801D27CFB95700338618 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A542801C27CFB95700338618 /* GameScene.swift */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +26,7 @@
 		A533200627C472A9009B3B05 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A533200927C472A9009B3B05 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A533200B27C472A9009B3B05 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A534E26C27D9C9E30000EDCD /* 効果音.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "効果音.mp3"; sourceTree = "<group>"; };
 		A542801C27CFB95700338618 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -65,6 +67,7 @@
 				A533200327C472A8009B3B05 /* Main.storyboard */,
 				A533200627C472A9009B3B05 /* Assets.xcassets */,
 				A533200827C472A9009B3B05 /* LaunchScreen.storyboard */,
+				A534E26C27D9C9E30000EDCD /* 効果音.mp3 */,
 				A533200B27C472A9009B3B05 /* Info.plist */,
 			);
 			path = FlappyBird;
@@ -129,6 +132,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A533200A27C472A9009B3B05 /* LaunchScreen.storyboard in Resources */,
+				A534E26D27D9C9E30000EDCD /* 効果音.mp3 in Resources */,
 				A533200727C472A9009B3B05 /* Assets.xcassets in Resources */,
 				A533200527C472A8009B3B05 /* Main.storyboard in Resources */,
 			);

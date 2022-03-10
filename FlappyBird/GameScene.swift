@@ -6,6 +6,7 @@
 //
 
 import SpriteKit
+import AVFoundation
 
 class GameScene: SKScene,SKPhysicsContactDelegate{
 
@@ -20,9 +21,8 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
     let groundCategory: UInt32 = 1 << 1
     let wallCategory: UInt32 = 1 << 2
     let scoreCategory: UInt32 = 1 << 3
-    let berryCategory: UInt32 = 1 << 2
-    let berryScoreCategory: UInt32 = 1 << 3
-
+    let berryCategory: UInt32 = 1 << 4
+    
     var score = 0
     var scoreLabelNode:SKLabelNode!
     var bestScoreLabelNode:SKLabelNode!
@@ -30,7 +30,9 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
     var berryScore = 0
     var berryScoreLabelNode:SKLabelNode!
     var berryBestScoreLabelNode:SKLabelNode!
-
+    
+    var player: AVAudioPlayer?
+    
     
     override func didMove(to view: SKView) {
         
@@ -217,7 +219,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         
             let berryTexture = SKTexture(imageNamed: "berry")
             berryTexture.filteringMode = .linear
-        
+            
             let movingDistance = self.frame.size.width + berryTexture.size().width
         
             let moveBerry = SKAction.moveBy(x: -movingDistance, y: 0, duration:4)
@@ -226,6 +228,12 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         
             let berryAnimation = SKAction.sequence([moveBerry, removeBerry])
         
+            let birdSize = SKTexture(imageNamed: "bird_a").size()
+            let random_y_range = birdSize.height * 3
+            let groundSize = SKTexture(imageNamed: "ground").size()
+            let center_y = groundSize.height + (self.frame.size.height - groundSize.height) / 2
+            let item_lowest_y = center_y - berryTexture.size().height / 2 - random_y_range / 2
+        
             let createBerryAnimation = SKAction.run({
                 
                 let random_y = CGFloat.random(in: 0...60)
@@ -233,29 +241,22 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
                 
                 let berry = SKSpriteNode(texture: berryTexture)
                 berry.position = CGPoint(x: 0, y: berry_y)
-                
+                berry.zPosition = -50
+                berry.physicsBody = SKPhysicsBody(rectangleOf: berryTexture.size())
+                berry.physicsBody?.categoryBitMask = self.berryCategory
+                berry.physicsBody?.isDynamic = false
                 berry.run(berryAnimation)
                 
                 self.berryNode.addChild(berry)
                 
-                let berryScoreNode = SKNode()
-                berryScoreNode.position = CGPoint(x: 0, y: berry_y)
-                
-                berryScoreNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 0, height: self.frame.size.height))
-                berryScoreNode.physicsBody?.categoryBitMask = self.berryScoreCategory
-                
-                berryScoreNode.physicsBody?.isDynamic = false
-                
-                berry.addChild(berryScoreNode)
             })
         
-            let waitAnimation = SKAction.wait(forDuration: 2)
+            let waitAnimation = SKAction.wait(forDuration: 1)
         
             let repeatForeverAnimation = SKAction.repeatForever(SKAction.sequence([createBerryAnimation, waitAnimation]))
         
             berryNode.run(repeatForeverAnimation)
         }
-
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if scrollNode.speed > 0 {
@@ -305,29 +306,25 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
                 bestScoreLabelNode.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
                 bestScoreLabelNode.text = "Best Score:\(bestScore)"
                 self.addChild(bestScoreLabelNode)
+                
+                berryScore = 0
+                berryScoreLabelNode = SKLabelNode()
+                berryScoreLabelNode.fontColor = UIColor.black
+                berryScoreLabelNode.position = CGPoint(x: 10, y: self.frame.size.height - 130)
+                berryScoreLabelNode.zPosition = 100
+                berryScoreLabelNode.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+                berryScoreLabelNode.text = "ItemScore:\(berryScore)"
+                self.addChild(berryScoreLabelNode)
+        
+                let berryBestScore = userDefaults.integer(forKey: "BEST")
+                berryBestScoreLabelNode = SKLabelNode()
+                berryBestScoreLabelNode.fontColor = UIColor.black
+                berryBestScoreLabelNode.position = CGPoint(x: 10, y: self.frame.size.height - 160)
+                berryBestScoreLabelNode.zPosition = 100
+                berryBestScoreLabelNode.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+                berryBestScoreLabelNode.text = "Item Best Score:\(berryBestScore)"
+                self.addChild(berryBestScoreLabelNode)
             }
-    
-    func setupBerryScoreLabel() {
-            // スコア表示を作成
-            berryScore = 0
-            berryScoreLabelNode = SKLabelNode()
-            berryScoreLabelNode.fontColor = UIColor.black
-            berryScoreLabelNode.position = CGPoint(x: 10, y: self.frame.size.height - 60)
-            berryScoreLabelNode.zPosition = 100
-            berryScoreLabelNode.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-            berryScoreLabelNode.text = "ItemScore:\(berryScore)"
-            self.addChild(berryScoreLabelNode)
-
-            // ベストスコア表示を作成
-            let berryBestScore = userDefaults.integer(forKey: "BEST")
-            berryBestScoreLabelNode = SKLabelNode()
-            berryBestScoreLabelNode.fontColor = UIColor.black
-            berryBestScoreLabelNode.position = CGPoint(x: 10, y: self.frame.size.height - 90)
-            berryBestScoreLabelNode.zPosition = 100
-            berryBestScoreLabelNode.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-            berryBestScoreLabelNode.text = "Item Best Score:\(berryBestScore)"
-            self.addChild(berryBestScoreLabelNode)
-        }
     
     func didBegin(_ contact: SKPhysicsContact) {
             
@@ -347,19 +344,6 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
                     bestScoreLabelNode.text = "Best Score:\(bestScore)"
                     userDefaults.set(bestScore, forKey: "BEST")
                     userDefaults.synchronize()
-                                
-            } else if (contact.bodyA.categoryBitMask & berryScoreCategory) == berryScoreCategory || (contact.bodyB.categoryBitMask & berryScoreCategory) == berryScoreCategory {
-                
-                print("Item ScoreUp")
-                berryScore += 1
-                berryScoreLabelNode.text = "Item Score:\(berryScore)"
-                var berryBestScore = userDefaults.integer(forKey: "BEST")
-                
-                if berryScore > berryBestScore {
-                    berryBestScore = berryScore
-                    berryBestScoreLabelNode.text = "Item Best Score:\(berryBestScore)"
-                    userDefaults.set(berryBestScore, forKey: "BEST")
-                    userDefaults.synchronize()
                 
             } else {
                 
@@ -377,7 +361,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         }
 }
 }
-}
+
     
 
     
