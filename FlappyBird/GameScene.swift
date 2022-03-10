@@ -74,7 +74,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         
             bird.physicsBody?.categoryBitMask = birdCategory
             bird.physicsBody?.collisionBitMask = groundCategory | wallCategory
-            bird.physicsBody?.contactTestBitMask = groundCategory | wallCategory | scoreCategory
+            bird.physicsBody?.contactTestBitMask = groundCategory | wallCategory | berryCategory
 
             bird.physicsBody?.allowsRotation = false
 
@@ -136,8 +136,9 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         let scoreNode = SKNode()
             scoreNode.position = CGPoint(x: upper.size.width + birdSize.width / 2, y: self.frame.height / 2)
             scoreNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: upper.size.width, height: self.frame.size.height))
-            scoreNode.physicsBody?.categoryBitMask = self.scoreCategory
             scoreNode.physicsBody?.isDynamic = false
+            scoreNode.physicsBody?.categoryBitMask = self.scoreCategory
+                  scoreNode.physicsBody?.contactTestBitMask = self.birdCategory
             wall.addChild(scoreNode)
 
             wall.run(wallAnimation)
@@ -236,11 +237,11 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         
             let createBerryAnimation = SKAction.run({
                 
-                let random_y = CGFloat.random(in: 0...60)
-                let berry_y = random_y
+                let random_y = CGFloat.random(in: 0...random_y_range)
+                let berry_y = random_y+item_lowest_y
                 
                 let berry = SKSpriteNode(texture: berryTexture)
-                berry.position = CGPoint(x: 0, y: berry_y)
+                berry.position = CGPoint(x: self.frame.size.width, y: berry_y)
                 berry.zPosition = -50
                 berry.physicsBody = SKPhysicsBody(rectangleOf: berryTexture.size())
                 berry.physicsBody?.categoryBitMask = self.berryCategory
@@ -316,7 +317,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
                 berryScoreLabelNode.text = "ItemScore:\(berryScore)"
                 self.addChild(berryScoreLabelNode)
         
-                let berryBestScore = userDefaults.integer(forKey: "BEST")
+                let berryBestScore = userDefaults.integer(forKey: "BERRY_BEST")
                 berryBestScoreLabelNode = SKLabelNode()
                 berryBestScoreLabelNode.fontColor = UIColor.black
                 berryBestScoreLabelNode.position = CGPoint(x: 10, y: self.frame.size.height - 160)
@@ -344,20 +345,23 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
                     bestScoreLabelNode.text = "Best Score:\(bestScore)"
                     userDefaults.set(bestScore, forKey: "BEST")
                     userDefaults.synchronize()
-                
-            } else {
-                
-                print("GameOver")
+                    
+                }else if (contact.bodyA.categoryBitMask & berryCategory) == berryCategory || (contact.bodyB.categoryBitMask & berryCategory) == berryCategory{
+                   
+                   
+                } else {
+                    
+                    print("GameOver")
 
-                scrollNode.speed = 0
-                
-                bird.physicsBody?.collisionBitMask = groundCategory
+                    scrollNode.speed = 0
+                    
+                    bird.physicsBody?.collisionBitMask = groundCategory
 
-                let roll = SKAction.rotate(byAngle: CGFloat(Double.pi) * CGFloat(bird.position.y) * 0.01, duration:1)
-                bird.run(roll, completion:{
-                    self.bird.speed = 0
-                })
-            }
+                    let roll = SKAction.rotate(byAngle: CGFloat(Double.pi) * CGFloat(bird.position.y) * 0.01, duration:1)
+                    bird.run(roll, completion:{
+                        self.bird.speed = 0
+                    })
+                }
         }
 }
 }
