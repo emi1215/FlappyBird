@@ -74,7 +74,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         
             bird.physicsBody?.categoryBitMask = birdCategory
             bird.physicsBody?.collisionBitMask = groundCategory | wallCategory
-            bird.physicsBody?.contactTestBitMask = groundCategory | wallCategory | berryCategory
+            bird.physicsBody?.contactTestBitMask = groundCategory | wallCategory | scoreCategory
 
             bird.physicsBody?.allowsRotation = false
 
@@ -120,26 +120,28 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
 
         let under = SKSpriteNode(texture: wallTexture)
             under.position = CGPoint(x: 0, y: under_wall_y)
+            
             under.physicsBody = SKPhysicsBody(rectangleOf: wallTexture.size())
+            under.physicsBody?.categoryBitMask = self.wallCategory
             under.physicsBody?.isDynamic = false
 
             wall.addChild(under)
 
         let upper = SKSpriteNode(texture: wallTexture)
             upper.position = CGPoint(x: 0, y: under_wall_y + wallTexture.size().height + slit_length)
+            
             upper.physicsBody = SKPhysicsBody(rectangleOf: wallTexture.size())
             upper.physicsBody?.categoryBitMask = self.wallCategory
             upper.physicsBody?.isDynamic = false
 
             wall.addChild(upper)
             
-        let scoreNode = SKNode()
-            scoreNode.position = CGPoint(x: upper.size.width + birdSize.width / 2, y: self.frame.height / 2)
-            scoreNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: upper.size.width, height: self.frame.size.height))
-            scoreNode.physicsBody?.isDynamic = false
-            scoreNode.physicsBody?.categoryBitMask = self.scoreCategory
-                  scoreNode.physicsBody?.contactTestBitMask = self.birdCategory
-            wall.addChild(scoreNode)
+            let scoreNode = SKNode()
+                scoreNode.position = CGPoint(x: upper.size.width + birdSize.width / 2, y: self.frame.height / 2)
+                scoreNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: upper.size.width, height: self.frame.size.height))
+                scoreNode.physicsBody?.categoryBitMask = self.scoreCategory
+                scoreNode.physicsBody?.isDynamic = false
+                wall.addChild(scoreNode)
 
             wall.run(wallAnimation)
             
