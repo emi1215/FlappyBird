@@ -32,7 +32,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
     var berryBestScoreLabelNode:SKLabelNode!
     
     var player: AVAudioPlayer?
-    
+    let sound = SKAction.playSoundFileNamed("効果音.mp3", waitForCompletion: false)
     
     override func didMove(to view: SKView) {
         
@@ -74,7 +74,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
         
             bird.physicsBody?.categoryBitMask = birdCategory
             bird.physicsBody?.collisionBitMask = groundCategory | wallCategory
-            bird.physicsBody?.contactTestBitMask = groundCategory | wallCategory | scoreCategory
+            bird.physicsBody?.contactTestBitMask = groundCategory | wallCategory | berryCategory
 
             bird.physicsBody?.allowsRotation = false
 
@@ -367,10 +367,28 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
                     bestScoreLabelNode.text = "Best Score:\(bestScore)"
                     userDefaults.set(bestScore, forKey: "BEST")
                     userDefaults.synchronize()
-                    
+            
+                }
                 }else if (contact.bodyA.categoryBitMask & berryCategory) == berryCategory || (contact.bodyB.categoryBitMask & berryCategory) == berryCategory{
-                   
-                   
+                    
+                    print("ItemScoreUp")
+                    berryScore += 1
+                    berryScoreLabelNode.text = "ItemScore:\(berryScore)"
+                    var berryBestScore = userDefaults.integer(forKey: "BERRY_BEST")
+                    if (contact.bodyA.categoryBitMask & berryCategory) == berryCategory {
+                            contact.bodyA.node?.removeFromParent()
+                          }
+                    if (contact.bodyB.categoryBitMask & berryCategory) == berryCategory {
+                            contact.bodyB.node?.removeFromParent()
+                          }
+                    run(sound)
+                    
+                    if berryScore > berryBestScore {
+                        berryBestScore = berryScore
+                        berryBestScoreLabelNode.text = "Item Best Score:\(berryBestScore)"
+                        userDefaults.set(berryBestScore, forKey: "BERRY_BEST")
+                        userDefaults.synchronize()
+                }
                 } else {
                     
                     print("GameOver")
@@ -386,7 +404,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate{
                 }
         }
 }
-}
+
 
     
 
